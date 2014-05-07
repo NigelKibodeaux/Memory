@@ -1,0 +1,145 @@
+<html>
+<head>
+	<meta name="viewport" content="user-scalable=no" />
+	<style>
+		body {
+			padding: 5px;
+			margin: 0;
+		}
+		#container {
+			margin: auto;
+		}
+		.card {
+			display: inline-block;
+			width: 150px;
+			height: 150px;
+			padding: 0px;
+			margin: 5px;
+			background-color: gray;
+			background-repeat: no-repeat;
+			background-position: 150px;
+		}
+		.front, .matched {
+			background-position: 0px;
+		}
+
+
+	</style>
+	<script>
+		function shuffle(array) {
+		  var currentIndex = array.length
+		    , temporaryValue
+		    , randomIndex
+		    ;
+
+		  // While there remain elements to shuffle...
+		  while (0 !== currentIndex) {
+
+		    // Pick a remaining element...
+		    randomIndex = Math.floor(Math.random() * currentIndex);
+		    currentIndex -= 1;
+
+		    // And swap it with the current element.
+		    temporaryValue = array[currentIndex];
+		    array[currentIndex] = array[randomIndex];
+		    array[randomIndex] = temporaryValue;
+		  }
+
+		  return array;
+		}
+
+		function hideAllUnmatched() {
+			var cards = document.querySelectorAll('.front');
+			for (i=0; i < cards.length; i++) {
+				card = cards[i];
+				card.classList.remove('front');
+			}
+		}
+
+		// THE TIMER
+		clearTimer = null;
+
+		function clickHandler(event) {
+			var card = false;
+			if (event.srcElement.classList.contains('card'))
+				card = event.srcElement;
+
+			if (card) {
+				// find other turned-over cards
+				var otherCards = document.querySelectorAll('.front');
+				
+				// first card turned over
+				if (otherCards.length == 0) {
+					// turn card over
+					card.classList.add('front');
+				}
+				// second card turned over
+				else if (otherCards.length == 1 && otherCards[0] != card) {
+					var otherCard = otherCards[0];
+					var match = card.style.backgroundImage == otherCard.style.backgroundImage;
+
+					if (match) {
+						card.classList.remove('front')
+						card.classList.add('matched')
+						otherCard.classList.remove('front')
+						otherCard.classList.add('matched')
+					}
+					else {
+						// turn card over
+						card.classList.add('front');
+
+						clearTimer = setTimeout(hideAllUnmatched, 1500);
+					}
+				}
+				// third card clicked while 2 are shown
+				// or second clicked twice
+				else {
+					if (clearTimer)
+						clearTimeout(clearTimer);
+
+					hideAllUnmatched();
+				}
+			}
+		}
+	</script>
+</head>
+<body>
+	<div id="container"></div>
+	<script>
+		// highest number of ?.JPG, starting at 1.JPG
+		var HOW_MANY_IMAGES_I_HAVE = 27
+
+		// wraps the whole shebang
+		var container = document.querySelector('#container');
+
+		var limit = window.innerHeight;
+		var maxCols = Math.floor(window.innerWidth / 160);
+		var maxRows = Math.floor(window.innerHeight / 160);
+		var maxCards = Math.min(maxCols * maxRows, HOW_MANY_IMAGES_I_HAVE * 2);
+		var maxPics = Math.floor(maxCards / 2);
+
+		container.style.width = maxCols * 160 + 'px'
+
+		cards = [];
+		for (i=1; i<=maxPics; i++) {
+			cards.push(i+'.JPG');
+		}
+
+		// make 2 of each card 
+		cards = cards.concat(cards);
+
+		// shuffle
+		cards = shuffle(cards);
+
+		cards.forEach(function(o,i){
+			var card = document.createElement('div');
+			card.classList.add('card');
+			card.style.backgroundImage = 'url(' + o + ')';
+
+			container.appendChild(card);
+		});
+
+		document.body.addEventListener('click', clickHandler, false);
+		document.body.addEventListener('touchstart', clickHandler, false);
+	</script>
+</body>
