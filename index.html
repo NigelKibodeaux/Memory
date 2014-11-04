@@ -19,10 +19,16 @@
 			background-repeat: no-repeat;
 			background-position: 150px;
 		}
+		/* override to put more on the page */
+		.card {
+			width: 120px;
+			height: 120px;
+			background-position: 120px;
+			background-size: 120px 120px;
+		}
 		.front, .matched {
 			background-position: 0px;
 		}
-
 
 	</style>
 	<script>
@@ -107,18 +113,21 @@
 	<div id="container"></div>
 	<script>
 		// highest number of ?.JPG, starting at 1.JPG
-		var HOW_MANY_IMAGES_I_HAVE = 26;
+		var HOW_MANY_IMAGES_I_HAVE = 32;
+		var IMAGE_SIZE = 120;
+
+		var paddedSize = IMAGE_SIZE + 10;
 
 		// wraps the whole shebang
 		var container = document.querySelector('#container');
 
 		var limit = window.innerHeight;
-		var maxCols = Math.floor(window.innerWidth / 160);
-		var maxRows = Math.floor(window.innerHeight / 160);
+		var maxCols = Math.floor(window.innerWidth / paddedSize);
+		var maxRows = Math.floor(window.innerHeight / paddedSize);
 		var maxCards = Math.min(maxCols * maxRows, HOW_MANY_IMAGES_I_HAVE * 2);
 		var maxPics = Math.floor(maxCards / 2);
 
-		container.style.width = maxCols * 160 + 'px'
+		container.style.width = maxCols * paddedSize + 'px'
 
 		cards = [];
 		for (i=1; i<=maxPics; i++) {
