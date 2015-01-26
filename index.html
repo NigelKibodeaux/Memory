@@ -73,7 +73,7 @@
 			if (card) {
 				// find other turned-over cards
 				var otherCards = document.querySelectorAll('.front');
-				
+
 				// first card turned over
 				if (otherCards.length == 0) {
 					// turn card over
@@ -104,6 +104,8 @@
 						clearTimeout(clearTimer);
 
 					hideAllUnmatched();
+					// turn this card over
+					card.classList.add('front');
 				}
 			}
 		}
@@ -134,7 +136,7 @@
 			cards.push(i+'.JPG');
 		}
 
-		// make 2 of each card 
+		// make 2 of each card
 		cards = cards.concat(cards);
 
 		// shuffle
