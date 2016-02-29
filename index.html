@@ -67,7 +67,7 @@
 			if (card) {
 				// find other turned-over cards
 				var otherCards = document.querySelectorAll('.front');
-				
+
 				// first card turned over
 				if (otherCards.length == 0) {
 					// turn card over
@@ -101,45 +101,81 @@
 				}
 			}
 		}
+
+		function addCardsToPage(cards) {
+			// highest number of ?.JPG, starting at 1.JPG
+			var HOW_MANY_IMAGES_I_HAVE = 27
+
+			// wraps the whole shebang
+			var container = document.querySelector('#container');
+
+			var limit = window.innerHeight;
+			var maxCols = Math.floor(window.innerWidth / 160);
+			var maxRows = Math.floor(window.innerHeight / 160);
+			var maxCards = Math.min(maxCols * maxRows, HOW_MANY_IMAGES_I_HAVE * 2);
+			var maxPics = Math.floor(maxCards / 2);
+
+			container.style.width = maxCols * 160 + 'px'
+
+			// cards = [];
+			// for (i=1; i<=maxPics; i++) {
+			// 	cards.push(i+'.JPG');
+			// }
+
+			// make 2 of each card
+			cards = cards.concat(cards);
+
+			// shuffle
+			cards = shuffle(cards);
+
+			cards.forEach(function(o,i){
+				var card = document.createElement('div');
+				card.classList.add('card');
+				card.style.backgroundImage = 'url(' + o.source + ')';
+
+				container.appendChild(card);
+			});
+
+			document.body.addEventListener('click', clickHandler, false);
+			document.body.addEventListener('touchstart', clickHandler, false);
+		}
 	</script>
+	<script src = "http://connect.facebook.net/en_US/sdk.js"></script>
 </head>
 <body>
-	<div id="container"></div>
 	<script>
-		// highest number of ?.JPG, starting at 1.JPG
-		var HOW_MANY_IMAGES_I_HAVE = 27
+	    FB.init({
+	      appId      : '1069605369778471',
+	      xfbml      : true,
+	      version    : 'v2.5'
+	    });
 
-		// wraps the whole shebang
-		var container = document.querySelector('#container');
-
-		var limit = window.innerHeight;
-		var maxCols = Math.floor(window.innerWidth / 160);
-		var maxRows = Math.floor(window.innerHeight / 160);
-		var maxCards = Math.min(maxCols * maxRows, HOW_MANY_IMAGES_I_HAVE * 2);
-		var maxPics = Math.floor(maxCards / 2);
-
-		container.style.width = maxCols * 160 + 'px'
-
-		cards = [];
-		for (i=1; i<=maxPics; i++) {
-			cards.push(i+'.JPG');
-		}
-
-		// make 2 of each card 
-		cards = cards.concat(cards);
-
-		// shuffle
-		cards = shuffle(cards);
-
-		cards.forEach(function(o,i){
-			var card = document.createElement('div');
-			card.classList.add('card');
-			card.style.backgroundImage = 'url(' + o + ')';
-
-			container.appendChild(card);
-		});
-
-		document.body.addEventListener('click', clickHandler, false);
-		document.body.addEventListener('touchstart', clickHandler, false);
+		FB.login(
+			function(){
+				FB.api(
+					'/me/photos',
+					'GET',
+					{"fields":"link,images"},
+					function(response) {
+						images = [];
+						response.data.forEach(function(x) {
+							var image = x.images.find(function(image){return image.height==130})
+							if (image) images.push(image);
+						});
+						addCardsToPage(images)
+					}
+				);
+			},
+			{scope: 'user_photos'}
+		);
 	</script>
+	<div id="container"></div>
+
+	<div
+	  class="fb-like"
+	  data-share="true"
+	  data-width="450"
+	  data-show-faces="true">
+	</div>
+
 </body>
