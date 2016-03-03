@@ -24,10 +24,18 @@
             width: 120px;
             height: 120px;
             background-position: 120px;
-            background-size:contain;
+            background-size: contain;
+            border-radius: 5px;
         }
         .front, .matched {
             background-position: 0px;
+            background-color: #e1e1e1;
+        }
+        #authorizebutton, #albums {
+            margin: auto;
+            font-size: 1.2em;
+            text-align: center;
+            display: block;
         }
 
     </style>
@@ -111,13 +119,13 @@
         }
 
 
-        function addCardsToPage(cards) {
-			// remove anything there now
-			container.innerHTML = '';
+        function addCardsToPage(facebook_images) {
+            // remove anything there now
+            container.innerHTML = '';
 
             // highest number of ?.JPG, starting at 1.JPG
             // var HOW_MANY_IMAGES_I_HAVE = 32;
-            var HOW_MANY_IMAGES_I_HAVE = cards.length;
+            var HOW_MANY_IMAGES_I_HAVE = facebook_images.length;
             var IMAGE_SIZE = 130;
 
             var paddedSize = IMAGE_SIZE + 10;
@@ -130,10 +138,10 @@
 
             container.style.width = maxCols * paddedSize + 'px';
 
-            // cards = [];
-            // for (i=1; i<=maxPics; i++) {
-            //     cards.push(i+'.JPG');
-            // }
+            var cards = [];
+            for (var i=0; i<maxPics; i++) {
+                cards.push(facebook_images[i]);
+            }
 
             // make 2 of each card
             cards = cards.concat(cards);
@@ -153,80 +161,93 @@
             document.body.addEventListener('touchstart', clickHandler, false);
         }
 
-		function albumSelect(element) {
-			var album_id = element.options[element.selectedIndex].value;
-			getImages(album_id);
-		}
+        function albumSelect(element) {
+            var album_id = element.options[element.selectedIndex].value;
+            getImages(album_id);
+        }
 
-		function getAlbums(album_list) {
-			FB.api(
-				'/me/albums',
-				'GET',
-				{},
-				function(album_list) {
-					album_list.data.forEach(function(album) {
-						var option = document.createElement('option');
-						option.value = album.id;
-						option.innerText = album.name;
-						albums.appendChild(option);
-					});
-				}
-			);
-		}
+        function getAlbums(album_list) {
+            FB.api(
+                '/me/albums',
+                'GET',
+                {},
+                function(album_list) {
+                    album_list.data.forEach(function(album) {
+                        var option = document.createElement('option');
+                        option.value = album.id;
+                        option.innerText = album.name;
+                        albums.appendChild(option);
+                    });
+                    authorizebutton.style.display = 'none';
+                    albums.style.display = 'block';
+                }
+            );
+        }
 
-		function getImages(album_id) {
-			FB.api(
-				'/' + album_id + '/photos',
-				'GET',
-				{fields:'images'},
-				function(response) {
-					images = [];
-					response.data.forEach(function(x) {
-						var image = x.images.find(function(image){return image.height==130})
-						if (image) images.push(image);
-					});
+        function getImages(album_id) {
+            FB.api(
+                '/' + album_id + '/photos',
+                'GET',
+                {fields:'images'},
+                function(response) {
+                    images = [];
+                    response.data.forEach(function(x) {
+                        var image = x.images.find(function(image){return image.height==130})
+                        if (image) images.push(image);
+                    });
 
-					addCardsToPage(images)
-				}
-			);
-		}
+                    addCardsToPage(images)
+                }
+            );
+        }
+
+        function authorizeWithFacebook() {
+            FB.login(
+                getAlbums,
+                {scope: 'user_photos'}
+            );
+        }
     </script>
     <script src = "http://connect.facebook.net/en_US/sdk.js"></script>
 </head>
 <body>
-	<select id="albums" onchange="albumSelect(this)">
-		<option>Select an Album</option>
-	</select>
+    <select id="albums" onchange="albumSelect(this)" style="display:none">
+        <option>Select an Album</option>
+    </select>
 
-	<div id="container"></div>
+    <div id="container">
+        <button id="authorizebutton" onclick="authorizeWithFacebook()">
+            First authorize this page to retrieve your facebook photos
+        </button>
+    </div>
 
-	<div
-	  class="fb-like"
-	  data-share="true"
-	  data-width="450"
-	  data-show-faces="true">
-	</div>
+    <div
+      class="fb-like"
+      data-share="true"
+      data-width="450"
+      data-show-faces="true"
+      style="position:absolute; bottom:0;">
+    </div>
 
-	<script>
-	  window.fbAsyncInit = function() {
-	    FB.init({
-	      appId      : '1069605369778471',
-	      xfbml      : true,
-	      version    : 'v2.5'
-	    });
+    <script>
+        var appId = '1069602393112102'
+        if (document.location.href.includes && document.location.href.includes('localhost'))
+            appId = '1069605369778471'
 
-        FB.login(
-            getAlbums,
-            {scope: 'user_photos'}
-        );
-	  };
+        window.fbAsyncInit = function() {
+        FB.init({
+          appId      : appId,
+          xfbml      : true,
+          version    : 'v2.5'
+        });
+        };
 
-	  (function(d, s, id){
-	     var js, fjs = d.getElementsByTagName(s)[0];
-	     if (d.getElementById(id)) {return;}
-	     js = d.createElement(s); js.id = id;
-	     js.src = "//connect.facebook.net/en_US/sdk.js";
-	     fjs.parentNode.insertBefore(js, fjs);
-	   }(document, 'script', 'facebook-jssdk'));
-	</script>
+        (function(d, s, id){
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement(s); js.id = id;
+            js.src = "//connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    </script>
 </body>
