@@ -5,10 +5,13 @@
         body {
             padding: 5px;
             margin: 0;
+            font-family: sans-serif;
         }
+        h1 { text-align: center }
         #container {
             margin: auto;
         }
+        #intro, #instructions { margin-top: 130px; }
         .card {
             display: inline-block;
             width: 150px;
@@ -178,8 +181,9 @@
                         option.innerText = album.name;
                         albums.appendChild(option);
                     });
-                    authorizebutton.style.display = 'none';
+                    intro.style.display = 'none';
                     albums.style.display = 'block';
+                    instructions.style.display = 'block';
                 }
             );
         }
@@ -216,9 +220,17 @@
     </select>
 
     <div id="container">
-        <button id="authorizebutton" onclick="authorizeWithFacebook()">
-            First authorize this page to retrieve your facebook photos
-        </button>
+        <div id="intro" style="display:none">
+            <h1>Play memory with your very own facebook photos</h1>
+
+            <button id="authorizebutton" onclick="authorizeWithFacebook()">
+                Grant access to play
+            </button>
+        </div>
+
+        <div id="instructions" style="display:none">
+            <h1>&#11014; Select an album &#11014;</h1>
+        </div>
     </div>
 
     <div
@@ -235,11 +247,21 @@
             appId = '1069605369778471'
 
         window.fbAsyncInit = function() {
-        FB.init({
-          appId      : appId,
-          xfbml      : true,
-          version    : 'v2.5'
-        });
+            FB.init({
+              appId      : appId,
+              xfbml      : true,
+              version    : 'v2.5'
+            });
+
+            FB.getLoginStatus(function(response) {
+                console.log('response', response)
+                if (response.status === 'connected') {
+                    getAlbums();
+                }
+                else {
+                    intro.style.display = 'block';
+                }
+            });
         };
 
         (function(d, s, id){
