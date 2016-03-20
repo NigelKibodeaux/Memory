@@ -126,6 +126,12 @@
             // remove anything there now
             container.innerHTML = '';
 
+            // handle albums with no images
+            if (!facebook_images || !facebook_images.length) {
+                container.innerHTML = "<h1>Ain't no images in this album</h1>";
+                return;
+            }
+
             // highest number of ?.JPG, starting at 1.JPG
             // var HOW_MANY_IMAGES_I_HAVE = 32;
             var HOW_MANY_IMAGES_I_HAVE = facebook_images.length;
@@ -165,7 +171,9 @@
         }
 
         function albumSelect(element) {
-            var album_id = element.options[element.selectedIndex].value;
+            var option = element.options[element.selectedIndex];
+            var album_id = option.value;
+            document.location = '#' + option.text;
             getImages(album_id);
         }
 
@@ -184,6 +192,15 @@
                     intro.style.display = 'none';
                     albums.style.display = 'block';
                     instructions.style.display = 'block';
+
+                    // if one is already selected in the page hash, get images for it
+                    if (location.hash) {
+                        var opts = Array.prototype.slice.call(albums.options);
+                        opts.forEach(function(option){
+                            if (location.hash.substring(1) === option.text)
+                                return getImages(option.value);
+                        });
+                    }
                 }
             );
         }
@@ -196,6 +213,7 @@
                 function(response) {
                     images = [];
                     response.data.forEach(function(x) {
+                        // we only want to 130px ones
                         var image = x.images.find(function(image){return image.height==130})
                         if (image) images.push(image);
                     });
