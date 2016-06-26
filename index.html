@@ -1,48 +1,20 @@
 <html>
 <head>
-    <meta name="viewport" content="user-scalable=no" />
-    <style>
-        body {
-            padding: 5px;
-            margin: 0;
-            font-family: sans-serif;
-        }
-        h1 { text-align: center }
-        #container {
-            margin: auto;
-        }
-        #intro, #instructions { margin-top: 130px; }
-        .card {
-            display: inline-block;
-            width: 150px;
-            height: 150px;
-            padding: 0px;
-            margin: 5px;
-            background-color: gray;
-            background-repeat: no-repeat;
-            background-position: 150px;
-        }
-        /* override to put more on the page */
-        .card {
-            width: 120px;
-            height: 120px;
-            background-position: 120px;
-            background-size: contain;
-            border-radius: 5px;
-        }
-        .front, .matched {
-            background-position: 0px;
-            background-color: #e1e1e1;
-        }
-        #authorizebutton, #albums {
-            margin: auto;
-            font-size: 1.2em;
-            text-align: center;
-            display: block;
-        }
-
-    </style>
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=.5" />
+    <link rel="stylesheet" href="style.css">
     <script>
+        // THE CARD TIMER
+        var clearTimer = null;
+        // THE OVERALL TIMER
+        var start_time = null;
+        // THE NUMBER OF CLICKS COUNTER
+        var total_clicks = 0;
+        // FINISHED HEADLINE
+        var finished_headline = document.createElement('h1');
+        finished_headline.classList.add('text');
+        finished_headline.classList.add('overlay');
+
+
         function shuffle(array) {
           var currentIndex = array.length
             , temporaryValue
@@ -67,14 +39,18 @@
 
         function hideAllUnmatched() {
             var cards = document.querySelectorAll('.front');
+
             for (i=0; i < cards.length; i++) {
                 card = cards[i];
                 card.classList.remove('front');
             }
         }
 
-        // THE TIMER
-        clearTimer = null;
+        function showFinished() {
+            var elapsed = Math.ceil(((new Date()) - start_time) / 100) / 10
+            finished_headline.innerText = 'Done in ' + total_clicks + ' moves and ' + elapsed + ' seconds!'
+            document.body.appendChild(finished_headline);
+        }
 
         function clickHandler(event) {
             var card = false;
@@ -82,6 +58,9 @@
                 card = event.srcElement;
 
             if (card) {
+                total_clicks++
+                console.log(total_clicks)
+
                 // find other turned-over cards
                 var otherCards = document.querySelectorAll('.front');
 
@@ -100,6 +79,11 @@
                         card.classList.add('matched')
                         otherCard.classList.remove('front')
                         otherCard.classList.add('matched')
+
+                        // if this is the last one, the user has won!
+                        var all_cards = document.querySelectorAll('.card').length
+                        var matched_cards = document.querySelectorAll('.matched').length
+                        if (all_cards === matched_cards) showFinished();
                     }
                     else {
                         // turn card over
@@ -168,6 +152,9 @@
 
             document.body.addEventListener('click', clickHandler, false);
             document.body.addEventListener('touchstart', clickHandler, false);
+
+            start_time = new Date();
+            total_clicks = 0;
         }
 
         function albumSelect(element) {
@@ -175,6 +162,11 @@
             var album_id = option.value;
             document.location = '#' + option.text;
             getImages(album_id);
+
+            // remove finish banner
+            try {
+                document.body.removeChild(finished_headline)
+            } catch(e) {console.log('no headline to remove')}
         }
 
         function getAlbums(album_list) {
@@ -238,7 +230,7 @@
     </select>
 
     <div id="container">
-        <div id="intro" style="display:none">
+        <div id="intro" class="text" style="display:none">
             <h1>Play memory with your very own facebook photos</h1>
 
             <button id="authorizebutton" onclick="authorizeWithFacebook()">
@@ -246,7 +238,7 @@
             </button>
         </div>
 
-        <div id="instructions" style="display:none">
+        <div id="instructions" class="text" style="display:none">
             <h1>&#11014; Select an album &#11014;</h1>
         </div>
     </div>
@@ -261,7 +253,7 @@
 
     <script>
         var appId = '1069602393112102'
-        if (document.location.href.includes && document.location.href.includes('localhost'))
+        if (document.location.href.includes && document.location.href.includes('memorydev'))
             appId = '1069605369778471'
 
         window.fbAsyncInit = function() {
@@ -289,5 +281,22 @@
             js.src = "//connect.facebook.net/en_US/sdk.js";
             fjs.parentNode.insertBefore(js, fjs);
         }(document, 'script', 'facebook-jssdk'));
+
+    </script>
+    <script>
+        /* FOR DEV */
+        if (document.location.href.includes && document.location.href.includes('localhost')) {
+            var images = [
+                {"height":130,"source":"https://scontent.xx.fbcdn.net/v/t1.0-0/p130x130/292509_2266316294420_1811586_n.jpg?oh=1419f6ef648785ee06024451d3e8df07&oe=57F98C3D","width":162},
+                {"height":130,"source":"https://scontent.xx.fbcdn.net/v/t1.0-0/p130x130/293374_2266316614428_2237586_n.jpg?oh=af940a56f4923ed005cfce107617f745&oe=57F9AB6C","width":162},
+                {"height":130,"source":"https://scontent.xx.fbcdn.net/v/t1.0-0/p130x130/224484_2266316854434_2265884_n.jpg?oh=fe920e96e18b57b93f3ccec4eb18bec9&oe=580814CA","width":162},
+                {"height":130,"source":"https://scontent.xx.fbcdn.net/v/t1.0-0/p130x130/185278_2266316974437_3618884_n.jpg?oh=ce9532b92b8dc811a638e7b41c8176bf&oe=57FB53AE","width":162},
+                // {"height":130,"source":"https://scontent.xx.fbcdn.net/v/t1.0-0/p130x130/294354_2266317134441_6706688_n.jpg?oh=58db124f8bc584b8d011a1be376f6c40&oe=57FEEFBF","width":162},
+                // {"height":130,"source":"https://scontent.xx.fbcdn.net/v/t1.0-0/p130x130/228869_2266317294445_5017070_n.jpg?oh=69c92c26963095939289fc2fb6e7ba51&oe=5802759A","width":162},
+                // {"height":130,"source":"https://scontent.xx.fbcdn.net/v/t1.0-0/p130x130/316189_2293401251527_6868482_n.jpg?oh=3293050b57cbda31f43ed1c4b7922470&oe=57F54F74","width":195},
+                // {"height":130,"source":"https://scontent.xx.fbcdn.net/v/t1.0-0/p130x130/308699_2293401651537_2510806_n.jpg?oh=937839bceb96712c22ec8e91bf686283&oe=580AB3A6","width":195},
+            ]
+            addCardsToPage(images)
+        }
     </script>
 </body>
