@@ -232,7 +232,7 @@
     </script>
     <script src = "//connect.facebook.net/en_US/sdk.js"></script>
 </head>
-<body>
+<body>Hi there
     <select id="albums" onchange="albumSelect(this)" style="display:none">
         <option>Select an Album</option>
     </select>
@@ -261,8 +261,9 @@
 
     <script>
         var appId = '1069602393112102'
-        if (document.location.href.includes && document.location.href.includes('localhost'))
-            appId = '1069605369778471'
+        if (document.location.href.includes && !document.location.href.includes('kibodeaux'))
+            appId = '1152122538193420'
+        console.log(appId)
 
         window.fbAsyncInit = function() {
             FB.init({
