@@ -1,8 +1,10 @@
 <html>
 <head>
-    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=.5" />
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=.7" />
     <link rel="stylesheet" href="style.css">
     <script>
+        // SIZE OF IMAGES
+        var IMAGE_SIZE = 130;
         // THE CARD TIMER
         var clearTimer = null;
         // THE OVERALL TIMER
@@ -109,6 +111,17 @@
         }
 
 
+        function maxCardsOnPage() {
+            var paddedSize = IMAGE_SIZE + 10;
+
+            var limit = window.innerHeight;
+            var maxCols = Math.floor(window.innerWidth / paddedSize);
+            var maxRows = Math.floor(window.innerHeight / paddedSize);
+
+            return maxCols * maxRows;
+        }
+
+
         function addCardsToPage(facebook_images) {
             // remove anything there now
             container.innerHTML = '';
@@ -122,17 +135,9 @@
             // highest number of ?.JPG, starting at 1.JPG
             // var HOW_MANY_IMAGES_I_HAVE = 32;
             var HOW_MANY_IMAGES_I_HAVE = facebook_images.length;
-            var IMAGE_SIZE = 130;
 
-            var paddedSize = IMAGE_SIZE + 10;
-
-            var limit = window.innerHeight;
-            var maxCols = Math.floor(window.innerWidth / paddedSize);
-            var maxRows = Math.floor(window.innerHeight / paddedSize);
-            var maxCards = Math.min(maxCols * maxRows, HOW_MANY_IMAGES_I_HAVE * 2);
+            var maxCards = Math.min(maxCardsOnPage(), HOW_MANY_IMAGES_I_HAVE * 2);
             var maxPics = Math.floor(maxCards / 2);
-
-            container.style.width = maxCols * paddedSize + 'px';
 
             var cards = [];
             for (var i=0; i<maxPics; i++) {
@@ -285,16 +290,16 @@
     </script>
     <script>
         /* FOR DEV */
-        if (document.location.href.includes && document.location.href.includes('localhost')) {
+        if (document.location.hostname.match(/\.local$/) || document.location.hostname == 'localhost') {
             var images = [
                 {"height":130,"source":"https://scontent.xx.fbcdn.net/v/t1.0-0/p130x130/292509_2266316294420_1811586_n.jpg?oh=1419f6ef648785ee06024451d3e8df07&oe=57F98C3D","width":162},
                 {"height":130,"source":"https://scontent.xx.fbcdn.net/v/t1.0-0/p130x130/293374_2266316614428_2237586_n.jpg?oh=af940a56f4923ed005cfce107617f745&oe=57F9AB6C","width":162},
                 {"height":130,"source":"https://scontent.xx.fbcdn.net/v/t1.0-0/p130x130/224484_2266316854434_2265884_n.jpg?oh=fe920e96e18b57b93f3ccec4eb18bec9&oe=580814CA","width":162},
                 {"height":130,"source":"https://scontent.xx.fbcdn.net/v/t1.0-0/p130x130/185278_2266316974437_3618884_n.jpg?oh=ce9532b92b8dc811a638e7b41c8176bf&oe=57FB53AE","width":162},
-                // {"height":130,"source":"https://scontent.xx.fbcdn.net/v/t1.0-0/p130x130/294354_2266317134441_6706688_n.jpg?oh=58db124f8bc584b8d011a1be376f6c40&oe=57FEEFBF","width":162},
-                // {"height":130,"source":"https://scontent.xx.fbcdn.net/v/t1.0-0/p130x130/228869_2266317294445_5017070_n.jpg?oh=69c92c26963095939289fc2fb6e7ba51&oe=5802759A","width":162},
-                // {"height":130,"source":"https://scontent.xx.fbcdn.net/v/t1.0-0/p130x130/316189_2293401251527_6868482_n.jpg?oh=3293050b57cbda31f43ed1c4b7922470&oe=57F54F74","width":195},
-                // {"height":130,"source":"https://scontent.xx.fbcdn.net/v/t1.0-0/p130x130/308699_2293401651537_2510806_n.jpg?oh=937839bceb96712c22ec8e91bf686283&oe=580AB3A6","width":195},
+                {"height":130,"source":"https://scontent.xx.fbcdn.net/v/t1.0-0/p130x130/294354_2266317134441_6706688_n.jpg?oh=58db124f8bc584b8d011a1be376f6c40&oe=57FEEFBF","width":162},
+                {"height":130,"source":"https://scontent.xx.fbcdn.net/v/t1.0-0/p130x130/228869_2266317294445_5017070_n.jpg?oh=69c92c26963095939289fc2fb6e7ba51&oe=5802759A","width":162},
+                {"height":130,"source":"https://scontent.xx.fbcdn.net/v/t1.0-0/p130x130/316189_2293401251527_6868482_n.jpg?oh=3293050b57cbda31f43ed1c4b7922470&oe=57F54F74","width":195},
+                {"height":130,"source":"https://scontent.xx.fbcdn.net/v/t1.0-0/p130x130/308699_2293401651537_2510806_n.jpg?oh=937839bceb96712c22ec8e91bf686283&oe=580AB3A6","width":195},
             ]
             addCardsToPage(images)
         }
