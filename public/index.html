@@ -13,6 +13,9 @@
         var finished_headline = document.createElement('h1');
         finished_headline.classList.add('text');
         finished_headline.classList.add('overlay');
+        finished_headline.onclick = function() {
+            this.parentElement.removeChild(this);
+        };
 
 
         function shuffle(array) {
@@ -60,7 +63,6 @@
 
             if (card) {
                 total_clicks++
-                console.log(total_clicks)
 
                 // find other turned-over cards
                 var otherCards = document.querySelectorAll('.front');
