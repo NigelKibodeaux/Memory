@@ -4,8 +4,17 @@
         <title>Nigel's Memory Game</title>
         <style>
             body {
-                padding: 5px;
+                padding: 0;
                 margin: 0;
+            }
+            h1 {
+                font-family: Arial, sans-serif;
+                text-align: center;
+                height: 20px;
+                line-height: 20px;
+                font-size: 20px;
+                margin: 0;
+                padding: 5px;
             }
             #container {
                 margin: auto;
@@ -30,6 +39,40 @@
             .front,
             .matched {
                 background-position: 0px;
+            }
+
+            #left-arrow,
+            #right-arrow {
+                font-size: 1.5em;
+                font-weight: bold;
+                text-decoration: none;
+            }
+
+            #left-arrow {
+                float: left;
+            }
+
+            #right-arrow {
+                float: right;
+            }
+
+            #left-arrow::before,
+            #right-arrow::before {
+                content: '';
+                display: inline-block;
+                width: 0;
+                height: 0;
+                border-style: solid;
+            }
+
+            #right-arrow::before {
+                border-width: 10px 0 10px 15px;
+                border-color: transparent transparent transparent black;
+            }
+
+            #left-arrow::before {
+                border-width: 10px 15px 10px 0;
+                border-color: transparent black transparent transparent;
             }
         </style>
         <script>
@@ -119,31 +162,64 @@
         </script>
     </head>
     <body>
-        <div id="container"></div>
+        <div id="container">
+            <h1>
+                <a id="left-arrow"> </a>
+                <span id="title"></span>
+                <a id="right-arrow"> </a>
+            </h1>
+        </div>
         <script>
+            // highest number of ?.JPG, starting at 1.JPG
+            const PAGES = [
+                { title: 'Young Kid Pictures', count: 32 },
+                { title: '2024 Family Europe Trip', count: 32 },
+            ]
+
+            var IMAGE_SIZE = 120
+
             // get the starting index from the query string or use 1
             var page = parseInt(new URLSearchParams(window.location.search).get('page')) || 1
+            var images_on_page = PAGES[page - 1]?.count
 
-            // highest number of ?.JPG, starting at 1.JPG
-            var HOW_MANY_IMAGES_I_HAVE = 32
-            var IMAGE_SIZE = 120
+            // set the title
+            var titleElement = document.querySelector('#title')
+            titleElement.textContent = PAGES[page - 1]?.title
+
+            // show or hide the left arrow
+            var leftArrow = document.querySelector('#left-arrow')
+            if (page > 1) {
+                leftArrow.style.display = 'inline'
+                leftArrow.href = '?page=' + (page - 1)
+            } else {
+                leftArrow.style.display = 'none'
+            }
+
+            // show or hide the right arrow
+            var rightArrow = document.querySelector('#right-arrow')
+            if (page < PAGES.length) {
+                rightArrow.style.display = 'inline'
+                rightArrow.href = '?page=' + (page + 1)
+            } else {
+                rightArrow.style.display = 'none'
+            }
 
             var paddedSize = IMAGE_SIZE + 10
 
             // wraps the whole shebang
             var container = document.querySelector('#container')
 
-            var limit = window.innerHeight
+            var limit = window.innerHeight - document.querySelector('h1').offsetHeight - 5
             var maxCols = Math.floor(window.innerWidth / paddedSize)
-            var maxRows = Math.floor(window.innerHeight / paddedSize)
-            var maxCards = Math.min(maxCols * maxRows, HOW_MANY_IMAGES_I_HAVE * 2)
+            var maxRows = Math.floor(limit / paddedSize)
+            var maxCards = Math.min(maxCols * maxRows, images_on_page * 2)
             var maxPics = Math.floor(maxCards / 2)
 
             container.style.width = Math.min(1040, maxCols * paddedSize) + 'px'
 
             cards = []
             for (let i = 1; i <= maxPics; i++) {
-                cards.push(i + HOW_MANY_IMAGES_I_HAVE * (page - 1) + '.JPG')
+                cards.push(i + images_on_page * (page - 1) + '.JPG')
             }
 
             // make 2 of each card
@@ -162,6 +238,15 @@
 
             document.body.addEventListener('click', clickHandler, false)
             document.body.addEventListener('touchstart', clickHandler, false)
+
+            // reload the page when the window is resized to optimize the layout
+            var resizeTimer
+            window.addEventListener('resize', function () {
+                clearTimeout(resizeTimer)
+                resizeTimer = setTimeout(function () {
+                    window.location.reload()
+                }, 250)
+            })
         </script>
     </body>
 </html>
