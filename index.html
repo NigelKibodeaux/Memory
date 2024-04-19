@@ -87,6 +87,17 @@
                             card.classList.add('matched')
                             otherCard.classList.remove('front')
                             otherCard.classList.add('matched')
+
+                            // check for game over
+                            if (document.querySelectorAll('.matched').length == cards.length) {
+                                const messages = ['You won!']
+                                if (maxPics < HOW_MANY_IMAGES_I_HAVE)
+                                    messages.push('Play again for a new assortment of pictures.')
+                                alert(messages.join('\n'))
+
+                                // reset the game by reloading the page
+                                window.location.reload()
+                            }
                         } else {
                             // turn card over
                             card.classList.add('front')
