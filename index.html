@@ -132,9 +132,12 @@
                             otherCard.classList.add('matched')
 
                             // check for game over
-                            if (document.querySelectorAll('.matched').length == cards.length) {
+                            if (
+                                document.querySelectorAll('.matched').length ==
+                                document.querySelectorAll('.card').length
+                            ) {
                                 const messages = ['You won!']
-                                if (maxPics < HOW_MANY_IMAGES_I_HAVE)
+                                if (maxPics < images_in_album)
                                     messages.push('Play again for a new assortment of pictures.')
                                 alert(messages.join('\n'))
 
@@ -180,7 +183,7 @@
 
             // get the starting index from the query string or use 1
             var page = parseInt(new URLSearchParams(window.location.search).get('page')) || 1
-            var images_on_page = PAGES[page - 1]?.count
+            var images_in_album = PAGES[page - 1]?.count
 
             // set the title
             var titleElement = document.querySelector('#title')
@@ -212,14 +215,14 @@
             var limit = window.innerHeight - document.querySelector('h1').offsetHeight - 5
             var maxCols = Math.floor(window.innerWidth / paddedSize)
             var maxRows = Math.floor(limit / paddedSize)
-            var maxCards = Math.min(maxCols * maxRows, images_on_page * 2)
+            var maxCards = Math.min(maxCols * maxRows, images_in_album * 2)
             var maxPics = Math.floor(maxCards / 2)
 
             container.style.width = Math.min(1040, maxCols * paddedSize) + 'px'
 
             cards = []
             for (let i = 1; i <= maxPics; i++) {
-                cards.push(i + images_on_page * (page - 1) + '.JPG')
+                cards.push(i + images_in_album * (page - 1) + '.JPG')
             }
 
             // make 2 of each card
