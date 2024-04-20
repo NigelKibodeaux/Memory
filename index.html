@@ -247,7 +247,10 @@
             window.addEventListener('resize', function () {
                 clearTimeout(resizeTimer)
                 resizeTimer = setTimeout(function () {
-                    window.location.reload()
+                    // reload the page if no cards are matched yet
+                    if (document.querySelectorAll('.matched').length === 0) {
+                        window.location.reload()
+                    }
                 }, 250)
             })
         </script>
