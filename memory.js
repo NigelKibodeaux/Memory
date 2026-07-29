@@ -156,7 +156,7 @@ function createMemoryGame({ image_url_array, image_size, container_element }) {
                             messages.push('Refresh the page for a new assortment of pictures.')
                         else messages.push('Refresh the page to play again.')
 
-                        alert(messages.join('\n'))
+                        setTimeout(() => alert(messages.join('\n')), 1)
                     }
                 } else {
                     // turn card over
